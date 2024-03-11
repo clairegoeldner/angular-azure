@@ -1,0 +1,54 @@
+<h1>Zoo</h1>
+<app-zoo-information [zooName]="zooName" [zooCapacity]="zooCapacity" [zooGuests]="zooGuests" [animals]="animals"></app-zoo-information>
+<button (click)="AdmitGuest()">Admit Guest</button>
+<hr />
+
+<h2>Animals</h2>
+<table id="animals">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Weight</th>
+            <th>Is Pregnant</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let animal of animals; let i = index">
+            <td>{{ animal.Name }}</td>
+            <td>{{ animal.Type }}</td>
+            <td>{{ animal.Age }}</td>
+            <td>{{ animal.Gender }}</td>
+            <td>{{ animal.Weight }}</td>
+            <td>
+                {{ animal.IsPregnant ? "Yes" : "No" }}
+
+                <button (click)="GiveBirth(i)" *ngIf="animal.IsPregnant">Give Birth</button>
+                <button (click)="MakePregnant(i)" *ngIf="animal.Gender.toLowerCase() == 'female' && !animal.IsPregnant">Make Pregnant</button>
+            </td>
+            <td>
+                <button (click)="EditAnimal(i)">Edit</button>
+                <button (click)="RemoveAnimal(i)">Remove</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<button (click)="AddAnimal()">Add Animal</button>
+<hr />
+
+<h2>Animal</h2>
+<label for="animalName">Name:</label>
+<input [(ngModel)]="currentAnimal.Name" class="zooField" id="animalName" name="animalName" /><br />
+<label for="animalType">Type:</label>
+<input [(ngModel)]="currentAnimal.Type" class="zooField" id="animalType" name="animalType" /><br />
+<label for="animalAge">Age:</label>
+<input [(ngModel)]="currentAnimal.Age" class="zooField" id="animalAge" name="animalAge" type="number" /><br />
+<label for="animalGender">Gender:</label>
+<input [(ngModel)]="currentAnimal.Gender" class="zooField" id="animalGender" name="animalGender" /><br />
+<label for="animalWeight">Weight:</label>
+<input [(ngModel)]="currentAnimal.Weight" class="zooField" id="animalWeight" name="animalWeight" />
+
+<router-outlet />
