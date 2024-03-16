@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
 
+import { Animal } from '../assets/animal';
+import { getAnimals, addAnimal, updateAnimal, deleteAnimal } from '../assets/apiHelper';
 import { ZooInformationComponent } from './zoo-information/zoo-information.component';
 
 @Component({
@@ -14,13 +15,13 @@ import { ZooInformationComponent } from './zoo-information/zoo-information.compo
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  animals: any;
+  animals: Array<Animal>;
   currentAnimal: any;
   zooName: string;
   zooCapacity: number;
   zooGuests: number;
 
-  constructor (private http: HttpClient) {
+  constructor (private changeDetectorRef: ChangeDetectorRef) {
     this.animals = [];
     this.currentAnimal = {};
     this.zooName = "Como Zoo";
@@ -28,36 +29,43 @@ export class AppComponent implements OnInit {
     this.zooGuests = 200;
   }
 
-  ngOnInit(): void {
-    this.http.get<Object>('../assets/animals.json').subscribe(
-      animals => {
-        this.animals = animals;
-      }
-    );
+  async ngOnInit(): Promise<void> {
+    this.animals = await getAnimals();
   }
 
-  AddAnimal(): void {
-    this.animals.push({Name: "", Type: "", Age: 0, Gender: "", Weight: 0, IsPregnant: false});
+  async AddAnimal(): Promise<void> {
+    this.animals = await addAnimal(new Animal());
+    this.changeDetectorRef.detectChanges();
   }
 
   AdmitGuest(): void {
     this.zooGuests++;
   }
 
-  EditAnimal(index: number): void {
+  EditAnimal(index: number) : void {
     this.currentAnimal = this.animals[index];
   }
 
-  GiveBirth(index: number): void {
+  async SubmitEditAnimal(): Promise<void> {
+    this.animals = await updateAnimal(this.currentAnimal);
+    this.changeDetectorRef.detectChanges();
+  }
+
+  async GiveBirth(index: number): Promise<void> {
     this.animals[index].IsPregnant = false;
-    this.animals.push({Name: "Baby", Type: this.animals[index].Type, Age: 0, Gender: "", Weight: this.animals[index].Weight * 0.1, IsPregnant: false});
+    await updateAnimal(this.animals[index]);
+    this.animals = await addAnimal(new Animal(0, "", 0, false, "Baby " + this.animals[index].Type, this.animals[index].Type, this.animals[index].Weight * 0.1));
+    this.changeDetectorRef.detectChanges();
   }
 
-  MakePregnant(index: number): void {
+  async MakePregnant(index: number): Promise<void> {
     this.animals[index].IsPregnant = true;
+    this.animals = await updateAnimal(this.animals[index]);
+    this.changeDetectorRef.detectChanges();
   }
 
-  RemoveAnimal(index: number): void {
-    this.animals.splice(index, 1);
+  async RemoveAnimal(index: number): Promise<void> {
+    this.animals = await deleteAnimal(this.animals[index]);
+    this.changeDetectorRef.detectChanges();
   }
 }
