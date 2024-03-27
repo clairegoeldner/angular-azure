@@ -1,55 +1,74 @@
 <h1>Zoo</h1>
-<app-zoo-information [zooName]="zooName" [zooCapacity]="zooCapacity" [zooGuests]="zooGuests" [animals]="animals"></app-zoo-information>
-<button (click)="AdmitGuest()">Admit Guest</button>
+<app-zoo-information [zooName]="zooName" [zooCapacity]="zooCapacity" [zooGuests]="zooGuests$.value" [animals]="animals" [capacityColor]="capacityColor"></app-zoo-information>
+<button mat-raised-button color="primary" (click)="AdmitGuest()">Admit Guest</button>
 <hr />
 
 <h2>Animals</h2>
-<table id="animals">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Weight</th>
-            <th>Is Pregnant</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let animal of animals; let i = index">
-            <td>{{ animal.Name }}</td>
-            <td>{{ animal.Type }}</td>
-            <td>{{ animal.Age }}</td>
-            <td>{{ animal.Gender }}</td>
-            <td>{{ animal.Weight }}</td>
-            <td>
-                {{ animal.IsPregnant ? "Yes" : "No" }}
+<table mat-table [dataSource]="animals">
+    <ng-container matColumnDef="Name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let animal">{{ animal.Name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="Type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let animal">{{ animal.Type }}</td>
+    </ng-container>
+    <ng-container matColumnDef="Age">
+        <th mat-header-cell *matHeaderCellDef>Age</th>
+        <td mat-cell *matCellDef="let animal">{{ animal.Age }}</td>
+    </ng-container>
+    <ng-container matColumnDef="Gender">
+        <th mat-header-cell *matHeaderCellDef>Gender</th>
+        <td mat-cell *matCellDef="let animal">{{ animal.Gender }}</td>
+    </ng-container>
+    <ng-container matColumnDef="Weight">
+        <th mat-header-cell *matHeaderCellDef>Weight</th>
+        <td mat-cell *matCellDef="let animal">{{ animal.Weight }}</td>
+    </ng-container>
+    <ng-container matColumnDef="IsPregnant">
+        <th mat-header-cell *matHeaderCellDef>Is Pregnant</th>
+        <td mat-cell *matCellDef="let animal; let i = index">
+            <button mat-raised-button color="accent" (click)="GiveBirth(i)" *ngIf="animal.IsPregnant">Give Birth</button>
+            <button mat-raised-button color="accent" (click)="MakePregnant(i)" *ngIf="animal.Gender.toLowerCase() == 'female' && !animal.IsPregnant">Make Pregnant</button>
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="Actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let animal; let i = index">
+            <button mat-raised-button color="accent" (click)="EditAnimal(i)">Edit</button><br />
+            <button mat-raised-button color="warn" (click)="RemoveAnimal(i)">Remove</button>
+        </td>
+    </ng-container>
 
-                <button (click)="GiveBirth(i)" *ngIf="animal.IsPregnant">Give Birth</button>
-                <button (click)="MakePregnant(i)" *ngIf="animal.Gender.toLowerCase() == 'female' && !animal.IsPregnant">Make Pregnant</button>
-            </td>
-            <td>
-                <button (click)="EditAnimal(i)">Edit</button>
-                <button (click)="RemoveAnimal(i)">Remove</button>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<button (click)="AddAnimal()">Add Animal</button>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table><br />
+<button mat-raised-button color="primary" (click)="AddAnimal()">Add Animal</button>
 <hr />
 
 <h2>Animal</h2>
-<label for="animalName">Name:</label>
-<input [(ngModel)]="currentAnimal.Name" class="zooField" id="animalName" name="animalName" /><br />
-<label for="animalType">Type:</label>
-<input [(ngModel)]="currentAnimal.Type" class="zooField" id="animalType" name="animalType" /><br />
-<label for="animalAge">Age:</label>
-<input [(ngModel)]="currentAnimal.Age" class="zooField" id="animalAge" name="animalAge" type="number" /><br />
-<label for="animalGender">Gender:</label>
-<input [(ngModel)]="currentAnimal.Gender" class="zooField" id="animalGender" name="animalGender" /><br />
-<label for="animalWeight">Weight:</label>
-<input [(ngModel)]="currentAnimal.Weight" class="zooField" id="animalWeight" name="animalWeight" />
-<button (click)="SubmitEditAnimal()">Submit</button>
+<form>
+    <mat-form-field>
+        <mat-label>Name:</mat-label>
+        <input matInput [(ngModel)]="currentAnimal.Name" name="animalName" />
+    </mat-form-field><br />
+    <mat-form-field>
+        <mat-label>Type:</mat-label>
+        <input matInput [(ngModel)]="currentAnimal.Type" name="animalType" />
+    </mat-form-field><br />
+    <mat-form-field>
+        <mat-label>Age:</mat-label>
+        <input matInput [(ngModel)]="currentAnimal.Age" name="animalAge" type="number" />
+    </mat-form-field><br />
+    <mat-form-field>
+        <mat-label>Gender:</mat-label>
+        <input matInput [(ngModel)]="currentAnimal.Gender" name="animalGender" />
+    </mat-form-field><br />
+    <mat-form-field>
+        <mat-label>Weight:</mat-label>
+        <input matInput [(ngModel)]="currentAnimal.Weight" name="animalWeight" />
+    </mat-form-field><br />
+    <button mat-raised-button color="primary" (click)="SubmitEditAnimal()">Submit</button>
+</form>
 
 <router-outlet />

@@ -3,6 +3,13 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { BehaviorSubject } from "rxjs";
+
+// Material imports
+import { MatButtonModule } from "@angular/material/button";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from "@angular/material/table";
 
 import { Animal } from '../assets/animal';
 import { getAnimals, addAnimal, updateAnimal, deleteAnimal } from '../assets/apiHelper';
@@ -11,25 +18,34 @@ import { ZooInformationComponent } from './zoo-information/zoo-information.compo
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule, HttpClientModule, ZooInformationComponent],
+  imports: [RouterOutlet, CommonModule, FormsModule, HttpClientModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatTableModule, ZooInformationComponent],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
   animals: Array<Animal>;
+  capacityColor: string = "accent";
   currentAnimal: any;
+  displayedColumns: string[] = ["Name", "Type", "Age", "Gender", "Weight", "IsPregnant", "Actions"];
   zooName: string;
   zooCapacity: number;
-  zooGuests: number;
+  zooGuests$ = new BehaviorSubject<number>(200);
 
   constructor (private changeDetectorRef: ChangeDetectorRef) {
     this.animals = [];
     this.currentAnimal = {};
     this.zooName = "Como Zoo";
     this.zooCapacity = 300;
-    this.zooGuests = 200;
   }
 
   async ngOnInit(): Promise<void> {
+    this.zooGuests$.subscribe((guests) => {
+      if (guests >= this.zooCapacity * 0.70) {
+        this.capacityColor = "accent";
+      } else {
+        this.capacityColor = "primary";
+      }
+    });
+
     this.animals = await getAnimals();
   }
 
@@ -39,7 +55,7 @@ export class AppComponent implements OnInit {
   }
 
   AdmitGuest(): void {
-    this.zooGuests++;
+    this.zooGuests$.next(this.zooGuests$.value + 1);
   }
 
   EditAnimal(index: number) : void {

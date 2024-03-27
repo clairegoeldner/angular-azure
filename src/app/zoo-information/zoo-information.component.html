@@ -1,8 +1,19 @@
-<label for="zooName">Zoo Name:</label>
-<input readonly [(ngModel)]="zooName" class="zooField" id="zooName" name="zooName" /><br />
-<label for="zooCapacity">Zoo Capacity:</label>
-<input readonly [(ngModel)]="zooCapacity" class="zooField" id="zooCapacity" name="zooCapacity" /><br />
-<label for="zooGuests">Zoo Guests:</label>
-<input readonly [(ngModel)]="zooGuests" class="zooField" id="zooGuests" name="zooGuests" /><br />
-<label for="animals">Animals:</label>
-<input readonly [(ngModel)]="animals.length" class="zooField" id="animals" name="animals" /><br />
+<form>
+    <mat-form-field>
+        <mat-label>Zoo Name:</mat-label>
+        <input matInput readonly [(ngModel)]="zooName" name="zooName" />
+    </mat-form-field><br />
+    <mat-form-field>
+        <mat-label>Zoo Capacity:</mat-label>
+        <input matInput readonly [(ngModel)]="zooCapacity" name="zooCapacity" />
+    </mat-form-field><br />
+    <mat-form-field>
+        <mat-label>Zoo Guests:</mat-label>
+        <input matInput readonly [(ngModel)]="zooGuests" name="zooGuests" />
+    </mat-form-field><br />
+    <mat-progress-bar style="max-width: 25%" [color]="capacityColor" [value]="(zooGuests / zooCapacity) * 100"></mat-progress-bar><br />
+    <mat-form-field>
+        <mat-label>Animals:</mat-label>
+        <input matInput readonly [(ngModel)]="animals.length" name="animals" />
+    </mat-form-field><br />
+</form>
